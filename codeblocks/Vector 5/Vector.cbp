@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Vector 4" />
+		<Option title="Vector 5" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -14,7 +14,7 @@
 				<Option parameters="10000000" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="/home/franz/SOC/" />
+					<Add directory="/home/franz/viennacl" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -25,7 +25,7 @@
 				<Option parameters="10000" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="/home/franz/SOC" />
+					<Add directory="/home/franz/viennacl" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
