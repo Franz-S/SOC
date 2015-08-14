@@ -26,3 +26,17 @@
 *.exe
 *.out
 *.app
+
+*.depend
+*.layout
+
+
+
+/Benchmark/temp
+/workspace/RemoteSystemsTempFiles
+**/bin/Release
+**/bin/Debug
+/workspace/.metadata
+
+# Office Temp Files
+*~
