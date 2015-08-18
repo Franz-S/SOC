@@ -22,7 +22,7 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="10000" />
+				<Option parameters="1000000" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add directory="/home/franz/viennacl" />
@@ -35,7 +35,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-fopenmp" />
 		</Compiler>
+		<Linker>
+			<Add library="gomp" />
+		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
