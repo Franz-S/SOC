@@ -32,7 +32,7 @@
 
 
 
-/Benchmark/temp
+/Benchmark
 /workspace/RemoteSystemsTempFiles
 **/bin/Release
 **/bin/Debug
@@ -40,3 +40,4 @@
 
 # Office Temp Files
 *~
+*.odt
