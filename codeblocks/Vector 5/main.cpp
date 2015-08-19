@@ -1,5 +1,5 @@
 #ifndef VIENNACL_WITH_OPENMP
-//#define VIENNACL_WITH_OPENMP
+#define VIENNACL_WITH_OPENMP
 #endif
 #include "viennacl/vector.hpp"
 #include "viennacl/linalg/inner_prod.hpp"
@@ -116,18 +116,13 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
     {
     case 0://For Testing
     {
-        viennacl::matrix<T,viennacl::column_major> A(BLAS_N, BLAS_N);
-
+        T a = (T)2.4;
         viennacl::vector<T> x(BLAS_N);
-
-        init_random(A);
 
         init_random(x);
 
-        BENCHMARK_OP(A=identity_matrix<T>(BLAS_N), "A.diag=1",    std::setprecision(3) << double((BLAS_N*BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(A=diag(x,0),                  "A.diag=x",    std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(x=diag(A),                    "x=A.diag",    std::setprecision(3) << double((BLAS_N+BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")
-
+        BENCHMARK_OP(a = norm_inf(x),                "Linf",    std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        a++;
         break;
     }
     case 1:

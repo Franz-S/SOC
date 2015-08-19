@@ -3,13 +3,17 @@ Created on Aug 10, 2015
 
 @author: franz
 '''
-import subprocess, time, Gnuplot
+#ACHTUNG KEINE LEERZEICHEN IM PFAD WEGEN commands
+
+import commands, time, Gnuplot
 import os
-import shutil
+
 
 
 
 op_choice=1#0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor 
+openmp=1#0:kein open mp,1 openmp
+
 
 if op_choice==0 :
     min_loop=100
@@ -17,7 +21,7 @@ if op_choice==0 :
     foldername="testing"
 elif op_choice==1 :
     min_loop=100
-    max_loop=1e6
+    max_loop=1e7
     foldername="Vector"
 elif op_choice==2 :
     min_loop=10
@@ -27,36 +31,65 @@ elif op_choice==3 :
     min_loop=10
     max_loop=5e3
     foldername="Matrix row mayor"
-    
+
 directory="/home/franz/Franz/Benchmark/temp/"+foldername+time.strftime("%d.%m.%Y__%H_%M_%S")+"/" # current date and time for the directory
 if not os.path.exists(directory): #if the directory does not exist, it will be created
     os.makedirs(directory)
 filename=directory+("file.txt") #path for datafile
 scriptname=directory+("script.gp")#path for script
 readmename=directory+("readme.txt")#path for readme
-c_file="/home/franz/viennacl/build/examples/benchmarks/franz-bench-cpu"#path for the c++ file
+buildfolder="/home/stuebler/viennacl/build/"#path to the build folder for cmake e.g
+c_file=buildfolder+"examples/benchmarks/franz-bench-cpu"#path for the c++ file
+remote_address="stuebler@jwein2.iue.tuwien.ac.at"
+remote="ssh "+remote_address+" "
 
-readme=open(readmename,"w")
-readme.write("""VIENNACL_WITH_OPENMP""")
-readme.close()
-    
+
+if openmp==1:
+    cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release"
+    readme=open(readmename,"w")
+    readme.write("""VIENNACL_WITH_OPENMP""")
+    readme.close()
+
+elif openmp==0:
+    cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release"
+    readme=open(readmename,"w")
+    readme.write("""NO_VIENNACL_WITH_OPENMP""")
+    readme.close()
+
+ 
 print "Benchmarktest von Franz"
 
-text=subprocess.check_output([c_file, str(0),str(op_choice)])#c-file aufrufen, es wird im python verzeichnis die file.txt erstellt
+cmd="cd "+buildfolder+";"+cmake_flag+";make franz-bench-cpu"
+
+text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]
 print text
+
+cmd=c_file+" "+str(0)+" "+str(op_choice)
+
+text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]#c-file aufrufen, es wird im python verzeichnis die file.txt erstellt
+print text
+
+cmd=""
+
+
+
 
 i=min_loop #start size for the vector
 while i<max_loop: #the loop
-    text=subprocess.check_output([c_file, str(i),str(op_choice)])
+    cmd=c_file+" "+str(i)+" "+str(op_choice)
+    text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]
     print text
     print str(i)+". size, finished"
     i=long(i*1.3)
-    
-shutil.move(os.path.abspath(".")+"/file.txt",filename)#verschieben des file.txt in den richtigen ordner
+
+text=commands.getstatusoutput("scp "+remote_address+":~/file.txt "+filename)
+print text
 
 axis_titel=open(filename, "r").readline().split(',')#file.txt erste zeile lesen und teilen
 axis_titel.pop()#letzte element entfernen, wegen dem ","
 axis_titel.pop(0)#erstes element loeschen weil "N"
+
+
 
 script=open(scriptname,"w") #the script for gnuplot will be created
 script.write("""set xlabel"N"
@@ -81,4 +114,4 @@ script.close()
 g = Gnuplot.Gnuplot(debug=0) #start gnuplot with the script
 g.load(scriptname)
 raw_input('Please press return to continue...\n')
-
+        
