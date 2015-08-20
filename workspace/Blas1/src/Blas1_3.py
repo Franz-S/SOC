@@ -11,8 +11,8 @@ import shutil
 
 
 
-op_choice=1#0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor 
-openmp=0#0:kein open mp,1 openmp
+op_choice=0#0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor 
+openmp=1#0:kein open mp,1 openmp
 if op_choice==0 :
     min_loop=100
     max_loop=1e7
@@ -30,13 +30,7 @@ elif op_choice==3 :
     max_loop=5e3
     foldername="Matrix row mayor"
 
-if openmp==1:
-    cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release"
-elif openmp==0:
-    cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release"
 
-
- 
 directory="/home/franz/Franz/Benchmark/temp/"+foldername+time.strftime("%d.%m.%Y__%H_%M_%S")+"/" # current date and time for the directory
 if not os.path.exists(directory): #if the directory does not exist, it will be created
     os.makedirs(directory)
@@ -46,8 +40,15 @@ readmename=directory+("readme.txt")#path for readme
 buildfolder="/home/franz/viennacl/build/"#path to the build folder for cmake e.g
 c_file=buildfolder+"examples/benchmarks/franz-bench-cpu"#path for the c++ file
 
+
+
 readme=open(readmename,"w")
-readme.write("""VIENNACL_WITH_OPENMP""")
+if openmp==1:
+    cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release"
+    readme.write("VIENNACL_WITH_OPENMP\nLaptop")
+elif openmp==0:
+    cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release"
+    readme.write("NO_VIENNACL_WITH_OPENMP\nLaptop")
 readme.close()
     
 print "Benchmarktest von Franz"
