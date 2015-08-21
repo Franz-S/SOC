@@ -5,19 +5,20 @@ Created on Aug 10, 2015
 '''
 #ACHTUNG KEINE LEERZEICHEN IM PFAD WEGEN commands
 
-import commands, time, Gnuplot
+import commands, time, Gnuplot,sys
 import os
 
 
-directory=[1,2,3]
+directory=[1,2,3]#initiate the arrays
 filename=[1,2,3]
 scriptname=[1,2,3]
 readmename=[1,2,3]
-op_choice=2#0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor 
-remote_address="stuebler@krupp2.iue.tuwien.ac.at"
-#remote_address="stuebler@jwein2.iue.tuwien.ac.at"
-#remote_address="localhost"
-openmp=0#0:kein open mp,1 openmp
+op_choice=0#0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor 
+remote_address=remote=["stuebler@krupp2.iue.tuwien.ac.at","stuebler@jwein2.iue.tuwien.ac.at","localhost"][2]
+
+print "Benchmarktest von Franz"
+
+openmp=0#0:kein open mp,1 openmp#dont change because you need it for the loop
 while openmp<2:
     if op_choice==0 :
         min_loop=100
@@ -36,7 +37,7 @@ while openmp<2:
         max_loop=5e3
         foldername="Matrix_row_mayor"
     
-    directory[openmp]="/home/franz/Franz/Benchmark/temp/"+foldername+time.strftime("%d.%m.%Y__%H_%M_%S")+"/" # current date and time for the directory
+    directory[openmp]="/home/franz/Franz/Benchmark/temp/"+remote_address+"/"+foldername+time.strftime("%d.%m.%Y__%H_%M_%S")+"/" # current date and time for the directory
     if not os.path.exists(directory[openmp]): #if the directory does not exist, it will be created
         os.makedirs(directory[openmp])
     filename[openmp]=directory[openmp]+("file.txt") #path for datafile
@@ -44,37 +45,33 @@ while openmp<2:
     readmename[openmp]=directory[openmp]+("readme.txt")#path for readme
     buildfolder="~/viennacl/build/"#path to the build folder for cmake e.g
     c_file=buildfolder+"examples/benchmarks/franz-bench-cpu"#path for the c++ file
-
     remote="ssh "+remote_address+" "
-    
+
     readme=open(readmename[openmp],"w")
-    if openmp==1:
-        cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release"
+
+    if openmp==1:#set the flags for cmake and write something into readme.txt
+        cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS=-Werror"
         readme.write("""VIENNACL_WITH_OPENMP\n"""+remote_address)
     elif openmp==0:
-        cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release"
+        cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS=-Werror"
         readme.write("""NO_VIENNACL_WITH_OPENMP\n"""+remote_address)
     readme.close()
     
-     
-    print "Benchmarktest von Franz"
-    
     cmd="cd "+buildfolder+";"+cmake_flag+";make franz-bench-cpu"
-    
-    text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]
-    print text
+    text=commands.getstatusoutput(remote+"'"+cmd+"'")#cmake set flags and make the file
+    print text[1]
+    if int(text[0])!=0:#check if the make process has worked
+        print text[0]
+        print "Error during make :("
+        sys.exit()
     
     cmd=c_file+" "+str(0)+" "+str(op_choice)
-    
     text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]#c-file aufrufen, es wird im python verzeichnis die file.txt erstellt
     print text
     
-    cmd=""
+    cmd=""#delet the content
     
-    
-    
-    
-    i=min_loop #start size for the vector
+    i=min_loop #set i to the start size for the vector
     while i<max_loop: #the loop
         cmd=c_file+" "+str(i)+" "+str(op_choice)
         text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]
@@ -116,7 +113,7 @@ while openmp<2:
 
 
 
-directory[openmp]="/home/franz/Franz/Benchmark/temp/"+foldername+"_combi"+time.strftime("%d.%m.%Y__%H_%M_%S")+"/" # current date and time for the directory
+directory[openmp]="/home/franz/Franz/Benchmark/temp/"+remote_address+"/"+foldername+"_combi"+time.strftime("%d.%m.%Y__%H_%M_%S")+"/" # current date and time for the directory
 filename[openmp]=directory[openmp]+("file.txt") #path for datafile
 scriptname[openmp]=directory[openmp]+("script.gp")#path for script
 readmename[openmp]=directory[openmp]+("readme.txt")#path for readme
