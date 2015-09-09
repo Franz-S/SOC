@@ -14,15 +14,15 @@ filename=[1,2,3]
 scriptname=[1,2,3]
 readmename=[1,2,3]
 op_choice=0#0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor 
-remote_address=remote=["stuebler@krupp2.iue.tuwien.ac.at","stuebler@jwein2.iue.tuwien.ac.at","localhost"][2]
+remote_address=["stuebler@krupp2.iue.tuwien.ac.at","stuebler@jwein2.iue.tuwien.ac.at","localhost"][2]
 
 print "Benchmarktest von Franz"
 
 openmp=0#0:kein open mp,1 openmp#dont change because you need it for the loop
 while openmp<2:
     if op_choice==0 :
-        min_loop=100
-        max_loop=1e7
+        min_loop=10
+        max_loop=5e3
         foldername="testing"
     elif op_choice==1 :
         min_loop=100
@@ -46,14 +46,13 @@ while openmp<2:
     buildfolder="~/viennacl/build/"#path to the build folder for cmake e.g
     c_file=buildfolder+"examples/benchmarks/franz-bench-cpu"#path for the c++ file
     remote="ssh "+remote_address+" "
-
+    werror="-Werror"
     readme=open(readmename[openmp],"w")
-
     if openmp==1:#set the flags for cmake and write something into readme.txt
-        cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS=-Werror"
+        cmake_flag="cmake .. -DENABLE_OPENMP=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS="+werror
         readme.write("""VIENNACL_WITH_OPENMP\n"""+remote_address)
     elif openmp==0:
-        cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS=-Werror"
+        cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS="+werror
         readme.write("""NO_VIENNACL_WITH_OPENMP\n"""+remote_address)
     readme.close()
     
