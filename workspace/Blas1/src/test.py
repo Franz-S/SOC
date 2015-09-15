@@ -10,7 +10,7 @@ print "start"
 
 
 buildfolder="~/viennacl/build/"#path to the build folder for cmake e.g
-testfile=["vector_float_double-test-cpu","matrix_row_double-test-cpu","matrix_col_double-test-cpu"][2]
+testfile=["vector_float_double-test-cpu","matrix_row_double-test-cpu","matrix_col_double-test-cpu","matrix_vector-test-cpu"][1]
 cmake_flag="cmake .. -DENABLE_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_PEDANTIC_FLAGS=ON -DCMAKE_CXX_FLAGS=-Werror"
 cmd="cd "+buildfolder+";"+cmake_flag+";make "+testfile
 text=commands.getstatusoutput(cmd)#cmake set flags and make the file
