@@ -8,7 +8,7 @@ Created on Aug 10, 2015
 import commands, time, Gnuplot,sys
 import os
 
-
+start=time.time()
 directory=[1,2,3]#initiate the arrays
 filename=[1,2,3]
 scriptname=[1,2,3]
@@ -65,16 +65,24 @@ while openmp<2:
         sys.exit()
     
     cmd=c_file+" "+str(0)+" "+str(op_choice)
-    text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]#c-file aufrufen, es wird im python verzeichnis die file.txt erstellt
-    print text
+    text=commands.getstatusoutput(remote+"'"+cmd+"'")#c-file aufrufen, es wird im python verzeichnis die file.txt erstellt
+    print text[1]
+    if int(text[0])!=0:#check if the make process has worked
+        print text[0]
+        print "Error during make :("
+        sys.exit()
     
     cmd=""#delet the content
     
     i=min_loop #set i to the start size for the vector
     while i<max_loop: #the loop
         cmd=c_file+" "+str(i)+" "+str(op_choice)
-        text=commands.getstatusoutput(remote+"'"+cmd+"'")[1]
-        print text
+        text=commands.getstatusoutput(remote+"'"+cmd+"'")
+        print text[1]
+        if int(text[0])!=0:#check if the make process has worked
+            print text[0]
+            print "Error during make :("
+            sys.exit()
         print str(i)+". size, finished"
         i=long(i*1.3)
     
@@ -143,5 +151,5 @@ g = Gnuplot.Gnuplot(debug=0) #start gnuplot with the script
 g.load(scriptname[openmp])
 script.close()
 print "finished everything"
-
+print "Zeit:"+str(time.time()-start)
         
