@@ -5,8 +5,9 @@ Created on Aug 10, 2015
 '''
 #ACHTUNG KEINE LEERZEICHEN IM PFAD WEGEN commands
 
-import commands,sys
+import commands, sys, time
 print "start"
+start=time.time()
 
 
 buildfolder="~/viennacl/build/"#path to the build folder for cmake e.g
@@ -46,3 +47,4 @@ if int(text[0])!=0:#check if the test has worked
         sys.exit()
 
 print "finished everything"
+print "Zeit:"+str(time.time()-start)
